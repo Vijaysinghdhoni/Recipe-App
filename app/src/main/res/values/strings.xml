@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Recipe App</string>
+    <string name="getting_started">Getting Started</string>
+    <string name="name">Name</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="confrm_passw">Confirm Password</string>
+    <string name="create_acc">Create an account to continue with the app</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="alrdy_acc">Already have an account?</string>
+    <string name="don_nt_acc">Don\'t have an account?</string>
+    <string name="sign_in">Sign In</string>
+    <string name="wlcm_bck">Welcome Back</string>
+    <string name="login_now">Login to your account to continue enjoying our service</string>
+    <string name="cntinue">Continue</string>
+    <string name="forgot_pass">Forgot password?</string>
+    <string name="frgt_pass_discrip">Please Enter  email address that you had  registered with , so that we can send you a password reset link</string>
+</resources>
