@@ -1,4 +1,4 @@
-package com.example.recipeapp.presentation.recipe.home.components
+package com.example.recipeapp.presentation.recipe.categoryMeals.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
@@ -16,37 +17,35 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.recipeapp.R
-import com.example.recipeapp.domain.model.Category
+import com.example.recipeapp.domain.model.CategoryMeal
 
 @Composable
-fun CategoryItem(
+fun MealsItem(
     modifier: Modifier = Modifier,
-    category: Category,
-    onClick: (Category) -> Unit
+    categoryMeal: CategoryMeal,
+    onClick: (String) -> Unit
 ) {
 
     Card(
         modifier = modifier
-            .width(110.dp)
-            .height(140.dp)
+            .width(120.dp)
+            .height(150.dp)
             .clickable {
-                onClick(category)
+                onClick(categoryMeal.mealID)
             }
     ) {
 
         Box(modifier = modifier.fillMaxWidth()) {
 
             AsyncImage(
-                model = category.categoryImg,
+                model = categoryMeal.mealImg,
                 contentDescription = null,
                 modifier = modifier.fillMaxSize(),
                 placeholder = painterResource(id = R.drawable.placeholder_img),
@@ -57,18 +56,18 @@ fun CategoryItem(
             Row(
                 modifier = modifier
                     .fillMaxWidth()
-                    .height(30.dp)
                     .align(Alignment.BottomStart)
-                    .background(Color.White),
+                    .background(Color.White)
+                    .padding(4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = category.categoryName,
+                    text = categoryMeal.mealName,
                     style = TextStyle(
                         fontWeight = FontWeight.Normal,
                         color = Color.Black,
-                        fontSize = 15.sp
+                        fontSize = 13.sp
                     ),
                 )
 

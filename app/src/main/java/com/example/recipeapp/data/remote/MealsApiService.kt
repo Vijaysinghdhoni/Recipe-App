@@ -17,4 +17,9 @@ interface MealsApiService {
     @GET("random.php")
     suspend fun getRandomMeal(): Response<MealDtoList>
 
+    @GET("filter.php")
+    suspend fun getCategoryMeals(
+        @Query("c") categoryName: String
+    ): Response<CatgoryMealsDtoList>
+
 }

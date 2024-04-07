@@ -15,6 +15,8 @@ import com.example.recipeapp.domain.repo.MealsRepository
 import com.example.recipeapp.domain.repo.UserRepository
 import com.example.recipeapp.domain.usecases.AuthUseCases
 import com.example.recipeapp.domain.usecases.GetAllCategoriesUsecase
+import com.example.recipeapp.domain.usecases.GetCategoryMealsUseCase
+import com.example.recipeapp.domain.usecases.GetMealDetailByIdUseCase
 import com.example.recipeapp.domain.usecases.GetRandomMealUseCase
 import com.example.recipeapp.domain.usecases.GetUserByIdUseCase
 import com.example.recipeapp.domain.usecases.InsertUserUseCase
@@ -105,11 +107,15 @@ class AppModule {
     @Singleton
     fun providesMealUseCases(
         getAllCategoriesUsecase: GetAllCategoriesUsecase,
-        getRandomMealUseCase: GetRandomMealUseCase
+        getRandomMealUseCase: GetRandomMealUseCase,
+        getCategoryMealsUseCase: GetCategoryMealsUseCase,
+        getMealDetailByIdUseCase: GetMealDetailByIdUseCase
     ): MealsUseCases {
         return MealsUseCases(
             getAllCategoriesUsecase,
-            getRandomMealUseCase
+            getRandomMealUseCase,
+            getCategoryMealsUseCase,
+            getMealDetailByIdUseCase
         )
     }
 

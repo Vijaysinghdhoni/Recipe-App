@@ -21,13 +21,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.recipeapp.R
 import com.example.recipeapp.presentation.recipe.BookMark
 import com.example.recipeapp.presentation.recipe.home.Home
 import com.example.recipeapp.presentation.recipe.Setting
+import com.example.recipeapp.presentation.recipe.categoryMeals.CategoryMeals
+import com.example.recipeapp.presentation.recipe.mealdetail.MealDetail
 
 
 @Composable
@@ -57,37 +61,47 @@ fun RecipeNavigator() {
     }
 
     val navController = rememberNavController()
+    val shouldShowBottomNavigation = when (currentRoute(navController)) {
+        Route.RecipeHome.route,
+        Route.RecipeBookMark.route,
+        Route.RecipeSetting.route,
+        -> true
+
+        else -> false
+    }
 
     Scaffold(
         bottomBar = {
-            NavigationBar(
-                containerColor = colorResource(id = R.color.card_background),
-                tonalElevation = 8.dp
-            ) {
-                navItems.forEachIndexed { index, item ->
+            if (shouldShowBottomNavigation) {
+                NavigationBar(
+                    containerColor = colorResource(id = R.color.card_background),
+                    tonalElevation = 8.dp
+                ) {
+                    navItems.forEachIndexed { index, item ->
 
-                    NavigationBarItem(
-                        selected = selctedItem.intValue == index,
-                        onClick = {
-                            selctedItem.intValue = index
-                            Log.d("MyTag", "selcted item is $selctedItem")
-                            navController.navigate(item.title)
-                        },
-                        label = {
-                            Text(text = item.title)
-                        },
-                        alwaysShowLabel = true,
-                        icon = {
-                            Icon(
-                                imageVector = if (index == selctedItem.intValue) {
-                                    item.selectedIcon
-                                } else {
-                                    item.unSelectedIcon
-                                },
-                                contentDescription = null
-                            )
-                        }
-                    )
+                        NavigationBarItem(
+                            selected = selctedItem.intValue == index,
+                            onClick = {
+                                selctedItem.intValue = index
+                                Log.d("MyTag", "selcted item is $selctedItem")
+                                navController.navigate(item.title)
+                            },
+                            label = {
+                                Text(text = item.title)
+                            },
+                            alwaysShowLabel = true,
+                            icon = {
+                                Icon(
+                                    imageVector = if (index == selctedItem.intValue) {
+                                        item.selectedIcon
+                                    } else {
+                                        item.unSelectedIcon
+                                    },
+                                    contentDescription = null
+                                )
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -102,7 +116,7 @@ fun RecipeNavigator() {
                 composable(
                     route = Route.RecipeHome.route
                 ) {
-                    Home()
+                    Home(navController = navController)
                 }
 
                 composable(
@@ -117,6 +131,24 @@ fun RecipeNavigator() {
                     Setting()
                 }
 
+                composable(
+                    route = "${Route.CategoryMealsScreen.route}/{categoryName}",
+                    arguments = listOf(navArgument("categoryName") { type = NavType.StringType })
+                ) { backStack ->
+                    val categoryName = backStack.arguments?.getString("categoryName")
+                    CategoryMeals(categoryName = categoryName) { mealId ->
+                        navController.navigate("${Route.MealDetailScreen.route}/$mealId")
+                    }
+                }
+
+
+                composable(
+                    route = "${Route.MealDetailScreen.route}/{mealID}",
+                    arguments = listOf(navArgument("mealID") { type = NavType.StringType })
+                ) { navBackStackEntry ->
+                    val mealID = navBackStackEntry.arguments?.getString("mealID")
+                    MealDetail(mealId = mealID)
+                }
 
             }
 

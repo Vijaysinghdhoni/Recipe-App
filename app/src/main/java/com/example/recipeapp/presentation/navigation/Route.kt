@@ -24,4 +24,8 @@ sealed class Route(val route: String) {
 
     object RecipeNavigator : Route("RecipeNavigator")
 
+    object CategoryMealsScreen : Route("categoryMealScreen")
+
+    object MealDetailScreen : Route("mealDetailScreen")
+
 }
