@@ -7,6 +7,6 @@ interface UserRepository {
 
     suspend fun insertUser(user: User)
 
-    suspend fun getUserById(userId: String): Resource<User>
+    suspend fun getUserById(): Resource<User>
 
 }

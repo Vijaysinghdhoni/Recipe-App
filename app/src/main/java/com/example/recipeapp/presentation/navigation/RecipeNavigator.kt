@@ -21,21 +21,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.recipeapp.R
-import com.example.recipeapp.presentation.recipe.BookMark
+import com.example.recipeapp.presentation.recipe.bookmarks.BookMark
 import com.example.recipeapp.presentation.recipe.home.Home
-import com.example.recipeapp.presentation.recipe.Setting
+import com.example.recipeapp.presentation.recipe.settings.Setting
 import com.example.recipeapp.presentation.recipe.categoryMeals.CategoryMeals
 import com.example.recipeapp.presentation.recipe.mealdetail.MealDetail
 
 
 @Composable
-fun RecipeNavigator() {
+fun RecipeNavigator(
+    onLogout : ()-> Unit
+) {
 
     val navItems = remember {
         listOf(
@@ -109,7 +113,7 @@ fun RecipeNavigator() {
 
         Box(modifier = Modifier.padding(it)) {
             NavHost(
-                navController = navController,
+                navController = navController as NavHostController,
                 startDestination = Route.RecipeHome.route
             ) {
 
@@ -120,15 +124,19 @@ fun RecipeNavigator() {
                 }
 
                 composable(
-                    route = Route.RecipeBookMark.route
+                    Route.RecipeBookMark.route
                 ) {
-                    BookMark()
+                    BookMark() { mealId ->
+                        navController.navigate("${Route.MealDetailScreen.route}/$mealId")
+                    }
                 }
 
                 composable(
                     route = Route.RecipeSetting.route
                 ) {
-                    Setting()
+                    Setting {
+                        onLogout()
+                    }
                 }
 
                 composable(

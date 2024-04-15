@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,7 +16,11 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,6 +67,11 @@ fun Home(
 
             RandomMeal(
                 meal = homeState.randomMeal,
+                onMealClick = { mealID ->
+                    mealID?.let {
+                        navController.navigate("${Route.MealDetailScreen.route}/$it")
+                    }
+                }
             ) {
                 viewModel.onHomeEvent(HomeScreenEvent.onRandomMealClick)
             }
@@ -110,19 +121,20 @@ fun Home(
             )
         }
 
+        if (!homeState.error.isNullOrBlank()) {
+            Text(
+                text = homeState.error,
+                color = MaterialTheme.colorScheme.error,
+                textAlign = TextAlign.Center,
+                modifier = modifier
+                    .fillMaxWidth()
+                    .align(Alignment.Center)
+                    .padding(horizontal = 20.dp)
+            )
+        }
+
 
     }
-    //complete mealdetail screen and then favourte screen
-    // impliment error when error comes then a toast and message in screen
-    //change all images placesholder
-    //if any category meals are null or empty then display in screen with toast or any kind of message
-    //forgot password
-    //impliment UI event like navigation using shared flow and error also
-    //impliment pagination using pagination 3
-    //first display a random meal with full screen width size and then below that display categorys
-    //when user opens the app the random meal should not display but when user clicks on random meal button the one meal should display with max width as screen
-    // or you can display a recomended meal and when user clicks on random meal then the recomended meal should change with the random meal
-
 
 }
 

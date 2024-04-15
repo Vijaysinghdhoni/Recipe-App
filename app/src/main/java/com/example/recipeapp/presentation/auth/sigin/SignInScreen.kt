@@ -146,7 +146,11 @@ fun SignInScreen(
 
         Text(
             text = stringResource(id = R.string.forgot_pass),
-            modifier = modifier.fillMaxWidth(),
+            modifier = modifier
+                .fillMaxWidth()
+                .clickable {
+                    navController.navigate(Route.ForgotPassWordScreen.route)
+                },
             textAlign = TextAlign.End,
             style = TextStyle(
                 color = colorResource(id = R.color.purple_500),

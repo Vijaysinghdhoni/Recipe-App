@@ -14,7 +14,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -102,6 +107,46 @@ fun CategoryMeals(
                 trackColor = Color.Gray
             )
         }
+
+        if (!categoryMealsState.error.isNullOrBlank()) {
+            Text(
+                text = categoryMealsState.error,
+                color = MaterialTheme.colorScheme.error,
+                textAlign = TextAlign.Center,
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .align(Alignment.Center)
+
+            )
+        }
+
+//        if (categoryMealsState.categoryMeals?.isEmpty() == true) {
+//            Column(
+//                modifier = modifier
+//                    .fillMaxWidth()
+//                    .align(Alignment.Center),
+//                horizontalAlignment = Alignment.CenterHorizontally
+//            ) {
+//
+//                Icon(
+//                    imageVector = Icons.Filled.ThumbUp,
+//                    contentDescription = null,
+//                    tint = Color.Red
+//                )
+//                Spacer(modifier = modifier.height(8.dp))
+//                Text(
+//                    text = "No meals in this category!",
+//                    color = MaterialTheme.colorScheme.error,
+//                    fontWeight = FontWeight.Bold,
+//                    textAlign = TextAlign.Center,
+//                    modifier = modifier
+//                        .fillMaxWidth()
+//                        .padding(horizontal = 19.dp)
+//                )
+//
+//            }
+//        }
 
     }
 

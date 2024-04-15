@@ -1,6 +1,7 @@
 package com.example.recipeapp.presentation.recipe.home.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,7 @@ import com.example.recipeapp.domain.model.Meal
 fun RandomMeal(
     modifier: Modifier = Modifier,
     meal: Meal?,
+    onMealClick: (String?) -> Unit,
     onRandomClick: () -> Unit
 ) {
 
@@ -93,7 +95,11 @@ fun RandomMeal(
             colors = CardDefaults.cardColors(
                 containerColor = Color.White
             ),
-            modifier = modifier.height(180.dp)
+            modifier = modifier
+                .height(180.dp)
+                .clickable {
+                    onMealClick(meal?.mealId)
+                }
         ) {
 
             Box(modifier = modifier.fillMaxSize()) {

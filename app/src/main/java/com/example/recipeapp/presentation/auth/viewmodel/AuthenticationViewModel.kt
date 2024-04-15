@@ -1,5 +1,6 @@
 package com.example.recipeapp.presentation.auth.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,6 +9,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.recipeapp.data.setting.UserPreferences
 import com.example.recipeapp.domain.model.User
 import com.example.recipeapp.domain.usecases.AuthUseCases
+import com.example.recipeapp.domain.usecases.UserLocalUseCase
+import com.example.recipeapp.presentation.auth.forgot_password.ForgotPasswordEvent
 import com.example.recipeapp.presentation.auth.forgot_password.ForgotPasswordState
 import com.example.recipeapp.presentation.auth.sigin.event.SignInScreenEvent
 import com.example.recipeapp.presentation.auth.sigin.event.SignInUiEvent
@@ -17,6 +20,9 @@ import com.example.recipeapp.presentation.auth.signup.event.SignUpScreenEvent
 import com.example.recipeapp.presentation.auth.signup.event.SignUpUIEvent
 import com.example.recipeapp.presentation.auth.signup.state.SignUpLocalState
 import com.example.recipeapp.presentation.auth.signup.state.SignUpState
+import com.example.recipeapp.presentation.recipe.settings.SettingEvent
+import com.example.recipeapp.presentation.recipe.settings.SettingLocalEvent
+import com.example.recipeapp.presentation.recipe.settings.SettingState
 import com.example.recipeapp.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -28,7 +34,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthenticationViewModel @Inject constructor(
     private val authUseCases: AuthUseCases,
-    private val userPreferences: UserPreferences
+    private val userPreferences: UserPreferences,
+    private val userLocalUseCase: UserLocalUseCase
 ) : ViewModel() {
 
     var signInLocalState by mutableStateOf(SignInLocalState())
@@ -50,6 +57,9 @@ class AuthenticationViewModel @Inject constructor(
     var isUserLogin = MutableSharedFlow<Boolean?>()
         private set
 
+    var settingState by mutableStateOf(SettingState())
+        private set
+
     init {
         readUserLoginState()
     }
@@ -59,6 +69,10 @@ class AuthenticationViewModel @Inject constructor(
 
     private val _signIn_uiEventFlow = MutableSharedFlow<SignInUiEvent>()
     val signIn_uiEventFlow = _signIn_uiEventFlow
+
+    private val settingUiEventFlow = MutableSharedFlow<SettingEvent>()
+    val settingEvent = settingUiEventFlow.asSharedFlow()
+
 
     fun onSignUpEvent(signUpScreenEvent: SignUpScreenEvent) {
 
@@ -146,7 +160,7 @@ class AuthenticationViewModel @Inject constructor(
 
             val response = authUseCases.registerUserWithEmailUseCase.execute(
                 signUpLocalState.email,
-                signUpLocalState.email
+                signUpLocalState.password
             )
 
             when (response) {
@@ -164,7 +178,7 @@ class AuthenticationViewModel @Inject constructor(
                         userName = signUpLocalState.name,
                         userEmail = signUpLocalState.email
                     )
-                    authUseCases.insertUserUseCase.execute(user)
+                    userLocalUseCase.insertUserUseCase.execute(user)
 
                     signUpState = signUpState.copy(
                         isLoading = false
@@ -248,24 +262,24 @@ class AuthenticationViewModel @Inject constructor(
                 isLoading = true
             )
 
+            Log.d(
+                "login",
+                "email is ${signInLocalState.email} password is ${signInLocalState.password}"
+            )
+
             val response =
                 authUseCases.loginUserWithEmailUseCase.execute(
                     signInLocalState.email,
-                    signUpLocalState.password
+                    signInLocalState.password
                 )
-
             when (response) {
-
                 is Resource.Success -> {
-
                     signInState = signInState.copy(
                         isLoading = false
                     )
-
                     signIn_uiEventFlow.emit(
                         SignInUiEvent.NavigationEvent("")
                     )
-
                 }
 
                 is Resource.Error -> {
@@ -286,9 +300,66 @@ class AuthenticationViewModel @Inject constructor(
                 }
 
             }
-
         }
 
+    }
+
+
+    fun onSettingScreenEvent(settingLocalEvent: SettingLocalEvent) {
+
+        when (settingLocalEvent) {
+            is SettingLocalEvent.LogoutClicked -> {
+                logoutUser()
+            }
+
+            is SettingLocalEvent.GetUser -> {
+                getUser()
+            }
+
+            is SettingLocalEvent.ShowAlertBox -> {
+                settingState = settingState.copy(
+                    showAlertDialog = settingLocalEvent.showAlertBox
+                )
+            }
+        }
+
+    }
+
+    private fun logoutUser() {
+        viewModelScope.launch {
+            updateUserLoginState(isLogin = false)
+            authUseCases.logoutUserUseCase.execute()
+        }
+    }
+
+    private fun getUser() {
+        viewModelScope.launch {
+            val response = userLocalUseCase.getUserByIdUseCase.execute()
+
+            when (response) {
+                is Resource.Loading -> {
+                    settingState = settingState.copy(
+                        isLoading = true
+                    )
+                }
+
+                is Resource.Success -> {
+                    settingState = settingState.copy(
+                        isLoading = false,
+                        userEmail = response.data?.userEmail,
+                        userName = response.data?.userName
+                    )
+                }
+
+                is Resource.Error -> {
+                    settingState = settingState.copy(
+                        isLoading = false,
+                        error = response.message
+                    )
+                }
+            }
+
+        }
     }
 
     fun updateUserLoginState(isLogin: Boolean) {
@@ -298,12 +369,65 @@ class AuthenticationViewModel @Inject constructor(
     }
 
 
-    fun readUserLoginState() {
+    private fun readUserLoginState() {
         viewModelScope.launch {
             userPreferences.readIntPref().collect {
                 isUserLogin.emit(it)
             }
         }
+    }
 
+    fun onForgotPasswordEvent(event: ForgotPasswordEvent) {
+        when (event) {
+            is ForgotPasswordEvent.OnContinueCLick -> {
+                forgotPassword(forgotPasswordState.email)
+            }
+
+            is ForgotPasswordEvent.OnEmailEntered -> {
+                forgotPasswordState = forgotPasswordState.copy(
+                    email = event.email
+                )
+            }
+        }
+    }
+
+    private fun forgotPassword(email: String) {
+
+        if (email.isEmpty()) {
+            forgotPasswordState = forgotPasswordState.copy(
+                error = "Email is required!"
+            )
+            return
+        }
+
+        viewModelScope.launch {
+            forgotPasswordState = forgotPasswordState.copy(
+                isLoading = true
+            )
+            val response = authUseCases.resetPasswordWithEmailUseCase.execute(email)
+            when (response) {
+
+                is Resource.Success -> {
+                    forgotPasswordState = forgotPasswordState.copy(
+                        isLoading = true,
+                        succesMssg = response.data!!
+                    )
+                }
+
+                is Resource.Error -> {
+                    forgotPasswordState = forgotPasswordState.copy(
+                        isLoading = false,
+                        error = response.message
+                    )
+                }
+
+                is Resource.Loading -> {
+                    forgotPasswordState = forgotPasswordState.copy(
+                        isLoading = true
+                    )
+                }
+
+            }
+        }
     }
 }
