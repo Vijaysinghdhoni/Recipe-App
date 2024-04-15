@@ -10,9 +10,9 @@ sealed class Route(val route: String) {
 
     object ForgotPassWordScreen : Route("FORGOT_PASSWORD_SCREEN")
 
-    object AppsStartNavigation : Route("APPS_STARTS_NAVIGATION")
+    object AppsStartNavigation : Route("APPS_STARTS_NAVIGATION_GRAPH")
 
-    object RecipeStartNavigation : Route("RECIPE_START_NAVIGATION")
+    object RecipeStartNavigation : Route("RECIPE_START_NAVIGATION_GRAPH")
 
     object RecipeHome : Route("Home")
 

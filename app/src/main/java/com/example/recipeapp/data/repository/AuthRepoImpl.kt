@@ -43,4 +43,21 @@ class AuthRepoImpl @Inject constructor(private val firebaseAuth: FirebaseAuth) :
         }
     }
 
+    override suspend fun logoutUser() {
+        firebaseAuth.signOut()
+    }
+
+    override suspend fun resetPasswordWithEmail(email: String): Resource<String> {
+        return try {
+            firebaseAuth.sendPasswordResetEmail(email).await()
+            Resource.Success("Password reset link is sended to provided email")
+        } catch (ex: FirebaseAuthException) {
+            Resource.Error(ex.localizedMessage ?: "Unknown Error")
+        } catch (ex: IOException) {
+            Resource.Error(ex.localizedMessage ?: "Unknown Error")
+        } catch (ex: Exception) {
+            Resource.Error(ex.localizedMessage ?: "Unknown Error")
+        }
+    }
+
 }

@@ -1,7 +1,16 @@
 package com.example.recipeapp.presentation.recipe.mealdetail
 
- sealed class MealDetailEvent {
+import com.example.recipeapp.domain.model.BookMarkMeal
 
-     data class GetMealDetailsByID(val mealId : String) : MealDetailEvent()
+sealed class MealDetailEvent {
+
+    data class GetMealDetailsByID(val mealId: String) : MealDetailEvent()
+
+    data class InsertBookMarkMeal(
+        val mealId: String,
+        val mealName: String,
+        val mealImg: String,
+        val isMealFav: Boolean
+    ) : MealDetailEvent()
 
 }

@@ -5,6 +5,6 @@ import javax.inject.Inject
 
 class GetUserByIdUseCase @Inject constructor(private val userRepository: UserRepository) {
 
-    suspend fun execute(userId: String) = userRepository.getUserById(userId)
+    suspend fun execute() = userRepository.getUserById()
 
 }
